@@ -19,7 +19,7 @@ namespace UnitTests
 
 
             var streamWriter = new StreamWriter(FilePath);
-            var tr2FileParser = new Tr2FileParser(streamWriter, null);
+            var tr2FileParser = new CsvToTr2FileParser(streamWriter, null);
 
             try
             {

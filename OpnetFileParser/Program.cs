@@ -10,7 +10,7 @@ namespace OpnetFileParser
         private static string fileToParsePath;
         private static string parsedFilePath;
 
-        private static FileParser fileParser;
+        private static CsvFileParser fileParser;
 
         [SuppressMessage("ReSharper", "UnusedParameter.Local")]
         private static void Main(string[] args)
@@ -34,9 +34,9 @@ namespace OpnetFileParser
             Console.ReadKey();
         }
 
-        private static FileParser Initialize()
+        private static CsvFileParser Initialize()
         {           
-            FileParser parser = null;
+            CsvFileParser parser = null;
 
             while (parser == null)
             {
@@ -171,18 +171,18 @@ namespace OpnetFileParser
             parsedFilePath += @".tr2";
         }
 
-        private static Tr1FileParser BuildTr1FileParser()
+        private static CsvToTr1FileParser BuildTr1FileParser()
         {
-            return new Tr1FileParser
+            return new CsvToTr1FileParser
                 (
                     new StreamWriter(parsedFilePath), 
                     new StreamReader(fileToParsePath)
                 );
         }
 
-        private static Tr2FileParser BuildTr2FileParser()
+        private static CsvToTr2FileParser BuildTr2FileParser()
         {
-            return new Tr2FileParser
+            return new CsvToTr2FileParser
             (
                 new StreamWriter(parsedFilePath),
                 new StreamReader(fileToParsePath)

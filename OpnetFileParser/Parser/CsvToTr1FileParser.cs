@@ -8,9 +8,9 @@ using static OpnetFileParser.Enums.DatagramFieldsIndexes;
 
 namespace OpnetFileParser.Parser
 {
-    public sealed class Tr1FileParser : FileParser
+    public sealed class CsvToTr1FileParser : CsvFileParser
     {
-        public Tr1FileParser(StreamWriter outputFileWriter, StreamReader inputFileReader)
+        public CsvToTr1FileParser(StreamWriter outputFileWriter, StreamReader inputFileReader)
             : base(outputFileWriter, inputFileReader)
         {
         }
@@ -23,9 +23,9 @@ namespace OpnetFileParser.Parser
             var minDateTime = new OpnetTimeSpan
                 (startTimeString: "1000-12-30 00:00:00", endTimeString: "1000-12-30 00:00:00");
 
-            var timeOrigin = base.GetTime(fileToParseString, Tools.CheckIfSmaller, maxDateTime)
+            var timeOrigin = base.GetBorderTime(fileToParseString, Tools.CheckIfSmaller, maxDateTime)
                 .OpnetStartDateTimeString;
-            var timeEnd = base.GetTime(fileToParseString, Tools.CheckIfGreater, minDateTime)
+            var timeEnd = base.GetBorderTime(fileToParseString, Tools.CheckIfGreater, minDateTime)
                 .OpnetEndDateTimeString;
 
             AppendHeaders(timeOrigin, timeEnd);
@@ -57,8 +57,8 @@ namespace OpnetFileParser.Parser
             var packets = fields.ElementAt(PacketsCountIndex);
             var bytes = fields.ElementAt(BytesCountIndex);
 
-            var packetsPerSecond = base.CalculateValuePerSecond(timeInterval, packets);
-            var bitsPerSecond = base.CalculateValuePerSecond(timeInterval, base.ConvertBytesToBits(bytes));
+            var packetsPerSecond = Tools.CalculateValuePerSecond(timeInterval, packets);
+            var bitsPerSecond = Tools.CalculateValuePerSecond(timeInterval, Tools.ConvertBytesToBits(bytes));
 
             return string.Join(",", sourceAddress, destinationAddress, timeWindow, packetsPerSecond, bitsPerSecond);
         }

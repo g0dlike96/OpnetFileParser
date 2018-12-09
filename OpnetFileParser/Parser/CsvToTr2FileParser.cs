@@ -9,9 +9,9 @@ using static OpnetFileParser.Enums.DatagramFieldsIndexes;
 
 namespace OpnetFileParser.Parser
 {
-    public sealed class Tr2FileParser : FileParser
+    public sealed class CsvToTr2FileParser : CsvFileParser
     {
-        public Tr2FileParser(StreamWriter outputFileWriter, StreamReader inputFileReader)
+        public CsvToTr2FileParser(StreamWriter outputFileWriter, StreamReader inputFileReader)
         :base(outputFileWriter, inputFileReader)
         {
         }
@@ -24,9 +24,9 @@ namespace OpnetFileParser.Parser
             var minDateTime = new OpnetTimeSpan
                 (startTimeString: "1000-12-30 00:00:00", endTimeString: "1000-12-30 00:00:00");
 
-            var timeOrigin = base.GetTime(fileToParseString, Tools.CheckIfSmaller, maxDateTime)
+            var timeOrigin = base.GetBorderTime(fileToParseString, Tools.CheckIfSmaller, maxDateTime)
                 .OpnetStartDateTimeString;
-            var timeEnd = base.GetTime(fileToParseString, Tools.CheckIfGreater, minDateTime)
+            var timeEnd = base.GetBorderTime(fileToParseString, Tools.CheckIfGreater, minDateTime)
                 .OpnetEndDateTimeString;
 
             AppendHeaders(timeOrigin, timeEnd);            
@@ -59,43 +59,11 @@ namespace OpnetFileParser.Parser
             var packets = fields.ElementAt(PacketsCountIndex);
             var bytes = fields.ElementAt(BytesCountIndex);
 
-            var packetsPerSecond = base.CalculateValuePerSecond(timeInterval, packets);
-            var bitsPerSecond = base.CalculateValuePerSecond(timeInterval, base.ConvertBytesToBits(bytes));
+            var packetsPerSecond = Tools.CalculateValuePerSecond(timeInterval, packets);
+            var bitsPerSecond = Tools.CalculateValuePerSecond(timeInterval, Tools.ConvertBytesToBits(bytes));
 
             return string.Join(",", sourceAddres, destinationAddress, protocol, sourcePort,
                  destinationPort, startTime, endTime, bitsPerSecond, packetsPerSecond);
-        }
-
-        //todo: decide what to do with it
-        private static SummaryAvgValues TakeAverageTransmissionSpeed(string fileText)
-        {
-            var summaryString = string.Empty;
-
-            using (var reader = new StringReader(fileText))
-            {
-                string line;
-
-                while ((line = reader.ReadLine()) != null)
-                {
-                    if (line.Contains("Summary"))
-                    {
-                        summaryString = reader.ReadToEnd();
-                    }
-                }
-            }
-
-            if (string.IsNullOrWhiteSpace(summaryString))
-            {
-                throw new ArgumentException($"Passed argument {nameof(fileText)} doesn't have summary section!");
-            }
-
-            var summaryProperties = summaryString.Split(',');
-
-            return new SummaryAvgValues
-                (
-                    averageBytesPerSecond: summaryProperties.ElementAt(8), 
-                    averagePacketsPerSecond: summaryProperties.ElementAt(9)
-                );
         }
     }
 }

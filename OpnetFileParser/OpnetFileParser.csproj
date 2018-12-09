@@ -45,9 +45,9 @@
   <ItemGroup>
     <Compile Include="Enums\DatagramFieldsIndexes.cs" />
     <Compile Include="Enums\Headers.cs" />
-    <Compile Include="Parser\FileParser.cs" />
-    <Compile Include="Parser\Tr1FileParser.cs" />
-    <Compile Include="Parser\Tr2FileParser.cs" />
+    <Compile Include="Parser\CsvFileParser.cs" />
+    <Compile Include="Parser\CsvToTr1FileParser.cs" />
+    <Compile Include="Parser\CsvToTr2FileParser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tools.cs" />

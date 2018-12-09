@@ -9,13 +9,13 @@ using static OpnetFileParser.Enums.DatagramFieldsIndexes;
 
 namespace OpnetFileParser.Parser
 {
-    public abstract class FileParser
+    public abstract class CsvFileParser
     {
         protected StreamWriter OutputFileWriter { get; }
         protected StreamReader InputFileReader { get; }
         protected StringBuilder StringBuilder { get; }
 
-        protected FileParser(StreamWriter outputFileWriter, StreamReader inputFileReader)
+        protected CsvFileParser(StreamWriter outputFileWriter, StreamReader inputFileReader)
         {
             this.OutputFileWriter = outputFileWriter;
             this.InputFileReader = inputFileReader;
@@ -31,10 +31,39 @@ namespace OpnetFileParser.Parser
             this.StringBuilder.Clear();
         }
 
-        protected string ConvertBytesToBits(string bytes)
-            => (int.Parse(bytes) * 8).ToString();
+        //todo: decide what to do with it
+        protected SummaryAvgValues TakeAverageTransmissionSpeed(string fileText)
+        {
+            var summaryString = string.Empty;
 
-        protected virtual OpnetTimeSpan GetTime
+            using (var reader = new StringReader(fileText))
+            {
+                string line;
+
+                while ((line = reader.ReadLine()) != null)
+                {
+                    if (line.Contains("Summary"))
+                    {
+                        summaryString = reader.ReadToEnd();
+                    }
+                }
+            }
+
+            if (string.IsNullOrWhiteSpace(summaryString))
+            {
+                throw new ArgumentException($"Passed argument {nameof(fileText)} doesn't have summary section!");
+            }
+
+            var summaryProperties = summaryString.Split(',');
+
+            return new SummaryAvgValues
+            (
+                averageBytesPerSecond: summaryProperties.ElementAt(8),
+                averagePacketsPerSecond: summaryProperties.ElementAt(9)
+            );
+        }
+
+        protected OpnetTimeSpan GetBorderTime
         (
             string fileText,
             Func<OpnetTimeSpan, OpnetTimeSpan, OpnetTimeSpan> condition,
@@ -74,7 +103,7 @@ namespace OpnetFileParser.Parser
             return resultDateTime;
         }
 
-        protected virtual void ParsingLoop(string fileToParseString)
+        protected void ParsingLoop(string fileToParseString)
         {
             using (var reader = new StringReader(fileToParseString))
             {
@@ -107,22 +136,6 @@ namespace OpnetFileParser.Parser
             StringBuilder.AppendLine($"time_origin: {timeOrigin}");
             StringBuilder.AppendLine($"time_end: {timeEnd}");
             StringBuilder.AppendLine();
-        }
-
-        protected virtual string CalculateValuePerSecond(OpnetTimeSpan timeInterval, string value)
-        {
-            var duration = timeInterval.GetTimeInterval();
-
-            try
-            {
-                return (int.Parse(value) / duration).ToString();
-            }
-            catch (ArithmeticException)
-            {
-                Console.WriteLine($"{Environment.NewLine}Blad w wyliczaniu statystyk: " +
-                                  $"{nameof(timeInterval)}: {timeInterval}, {nameof(value)}: {value}");
-                throw;
-            }
         }
 
         public abstract void Parse();
