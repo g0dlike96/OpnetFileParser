@@ -43,7 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Enums\DatagramFields.cs" />
+    <Compile Include="Enums\DatagramFieldsIndexes.cs" />
     <Compile Include="Enums\Headers.cs" />
     <Compile Include="Parser\FileParser.cs" />
     <Compile Include="Parser\Tr1FileParser.cs" />

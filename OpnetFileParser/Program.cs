@@ -30,7 +30,7 @@ namespace OpnetFileParser
                 fileParser.Cleanup();
             }
 
-            Console.WriteLine("Program zakonczyl dzialanie. Nacisnij dowolny przycisk by zamknac okno...");
+            Console.WriteLine($"{Environment.NewLine}Program zakonczyl dzialanie. Nacisnij dowolny przycisk by zamknac okno...");
             Console.ReadKey();
         }
 
@@ -38,7 +38,7 @@ namespace OpnetFileParser
         {           
             FileParser parser = null;
 
-            while (fileParser == null)
+            while (parser == null)
             {
                 ShowStartupMenu();
 

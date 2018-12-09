@@ -1,9 +1,9 @@
 ﻿namespace OpnetFileParser.Enums
 {
-    public static class DatagramFields
+    public static class DatagramFieldsIndexes
     {
         public static int StartTimeIndex => 0;
-        public static int EndTimeIndex => 2;
+        public static int EndTimeIndex => 1;
         public static int SourceAddressIndex => 3;
         public static int DestinationAddressIndex => 4;
         public static int SourcePortIndex => 5;
